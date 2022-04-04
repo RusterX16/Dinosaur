@@ -9,44 +9,47 @@ array_splice($data1, 0, 1);
 $data2 = array_map("str_getcsv", file("dataset2.csv"));
 array_splice($data2, 0, 1);
 
-for($i = 0, $loopsMax = count($data1); $i < $loopsMax; $i++) {
-    for($j = 0, $jMax = count($data2); $j < $jMax; $j++) {
-        if($data1[$i][0] === $data2[$j][0] || $data1[$j][0] === $data2[$i][0]) {
-            $data1[$i][] = $data2[$i][1];
-            $data1[$i][] = $data2[$i][2];
+for($i = 0; $i < $size; $i++) {
+    $array[$i][0] = $data1[$i][0];
+    $array[$i][1] = $data1[$i][1];
+    $array[$i][2] = $data1[$i][2];
+
+    for($j = 0; $j < $size; $j++) {
+        if($array[$i][0] === $data2[$j][0]) {
+            $array[$i][3] = $data2[$j][1];
+            $array[$i][4] = $data2[$j][2];
             break;
         }
-        $data1[$i] = $data2[$i];
+        $array[$i][3] = null;
+        $array[$i][4] = null;
     }
 }
-print_r($data1);
-
-/*for($i = 0; $i < $size; $i++) {
-    $array[] = [$d1[$i][0]];
-}*/
-
-/*
-for($j = 0, $jMax = count(max($d1, $d2)); $j < $jMax; $j++) {
-    $array[] = $d1[$j];
-}
-
-for($i = 0, $iMax = count(max($d1, $d2)); $i < $jMax; $i++) {
-    for($j = 0, $jMax = count(max($d1, $d2)); $j < $jMax; $j++) {
-        if($d1[$i][0] === $d2[$j][0] || $d2[$j][0] === $d2[$i][0]) {
-            $array[$i][] = $d2[$j][1];
-            $array[$i][] = $d2[$j][2];
-            break;
-        }
-    }
-}
-
-print_r($array);
+$array[7][0] = $data2[4][0];
+$array[7][1] = null;
+$array[7][2] = null;
+$array[7][3] = $data2[4][1];
+$array[7][4] = $data2[4][2];
+array_pop($array);
 
 $out = "";
+$g = 9.8;
+$max = 0;
+
 foreach($array as $item) {
-    if($item[3] === "bipedal") {
-        $out .= $item[0];
+    if(is_null($item[3]) || is_null($item[1])) {
+        continue;
+    }
+    $speed = (($item[3] / $item[1]) - 1) * sqrt($item[1] * $g);
+
+    foreach($array as $i) {
+        if($item[4] !== "bipedal") {
+            continue;
+        }
+        if($speed > $max) {
+            $out .= $item[0] . "\n";
+            $max = $speed;
+            break;
+        }
     }
 }
-
-//print_r($out);*/
+print_r($out);
